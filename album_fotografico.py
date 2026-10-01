@@ -1,21 +1,56 @@
-def carica_da_file(file_path):
+def carica_da_file(file_path):  #codice, titolo, autore, mese, anno
     """Carica le foto dal file, creando un nuovo anno ogni volta che compare per la prima volta"""
-    # TODO
-
+    listaPath = file_path.split("\\")
+    print(listaPath[-1])
+    nomeFile=listaPath[-1]
+    try:
+        with open(nomeFile, "r") as inFile:
+            inFile.readline()  # superiamo la prima riga d'intestazione
+            album = {}
+            for line in  inFile: # legge riga per riga fermandosi a ogni \n
+                line = line.rstrip() # toglie '\n', line è un'unica stringa
+                parole = line.split(',') # otteniamo una lista con le parole della riga ordinate
+                # ora aggiorniamo il dizionario
+                anno = parole[-1]
+                codiceFoto = parole[0]
+                info = parole[1:4] + parole[5:]
+                if anno not in album:
+                    album[anno] = {}
+                album[anno][codiceFoto] = info
+            print('album registrato correttamente')
+            for item in album.items():
+                print(item)
+                                                                                            #print(album[anno].items())
+    except FileNotFoundError:
+        print('None')
+    return album
 
 def aggiungi_foto(album, codice, titolo, autore, mese, anno, file_path):
     """Aggiunge una foto all'album, creando l'anno al volo se non è ancora presente"""
-    # TODO
+
+    if anno not in album:
+        album[anno] = {}
+    album[anno][codice] = [titolo,autore,mese,anno]
+    # print(f"hai in inserito nell'album:\n {codice} {album[anno][codice]}")
+    return album
 
 
 def cerca_foto(album, codice):
     """Cerca una foto nell'album dato il codice"""
-    # TODO
+    for anno in album:
+        if codice in album[anno]:
+            info = album[anno][codice]
+            foto = [codice] + info + [anno]
+            # print(foto)
+    return foto
 
 
-def elenco_foto_anno_per_titolo(album, anno):
+def elenco_foto_anno_per_titolo(album, anno): #codice, titolo, autore, mese, anno
     """Ordina i titoli delle foto di un dato anno in ordine alfabetico"""
-    # TODO
+    anno = str(anno)
+    foto_anno = album[anno]
+    foto_ordinate = dict(sorted(foto_anno.items(), key=lambda item: item[1][0]))
+    return foto_ordinate
 
 
 def main():
@@ -78,7 +113,7 @@ def main():
                 continue
 
             try:
-                anno = int(input("Inserisci l'anno da consultare: ").strip())
+                anno = int(input("Inserisci l'anno da consultare: ").strip())   #risolvibile anche indicando l'imput come una stringa
             except ValueError:
                 print("Errore: inserire un valore numerico valido.")
                 continue
